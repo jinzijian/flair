@@ -72,7 +72,7 @@ class SequenceTagger(flair.nn.Model):
             embeddings: TokenEmbeddings,
             tag_dictionary: Dictionary,
             tag_type: str,
-            use_crf: bool = True,
+            use_crf: bool = False,
             use_rnn: bool = True,
             rnn_layers: int = 1,
             dropout: float = 0.0,
@@ -84,6 +84,9 @@ class SequenceTagger(flair.nn.Model):
             pickle_module: str = "pickle",
             beta: float = 1.0,
             loss_weights: Dict[str, float] = None,
+            weight_true = 0.5,
+            margin = 0.5,
+            threshold = 0.5,
     ):
         """
         Initializes a SequenceTagger
@@ -107,6 +110,9 @@ class SequenceTagger(flair.nn.Model):
         """
 
         super(SequenceTagger, self).__init__()
+        self.threshold = threshold
+        self.weight_true = weight_true
+        self.margin = margin
         self.use_rnn = use_rnn
         self.hidden_size = hidden_size
         self.use_crf: bool = use_crf
@@ -732,6 +738,21 @@ class SequenceTagger(flair.nn.Model):
 
         return score
 
+    def ThresHoldLoss(self, logits, targets):
+        # TODO: finish the threshold loss efficiently
+        N = targets.shape[0]
+        target_logits = logits[torch.arange(N), targets]  # select the target logits
+        # targets logits should be larger than threshold by some margin
+        loss_target = self.weight_true * torch.max(self.zero,
+                                                   self.threshold + self.margin - target_logits).sum() / target_logits.nelement()
+
+        mask = torch.ones_like(logits)
+        mask[torch.arange(N), targets] = 0  # cancel the target
+        # When target is not O, punish the large wrong predict
+        loss_not_target = (torch.max(self.zero, logits - (self.threshold - self.margin)) * mask).sum() / mask.sum()
+
+        return loss_target + loss_not_target
+
     def _calculate_loss(
             self, features: torch.tensor, sentences: List[Sentence]
     ) -> float:
@@ -766,8 +787,8 @@ class SequenceTagger(flair.nn.Model):
                     features, tag_list, lengths
             ):
                 sentence_feats = sentence_feats[:sentence_length]
-                score += torch.nn.functional.cross_entropy(
-                    sentence_feats, sentence_tags, weight=self.loss_weights
+                score += self.ThresHoldLoss(
+                    sentence_feats, sentence_tags
                 )
             score /= len(features)
             return score
