@@ -59,12 +59,13 @@ class ModelTrainer:
         self.optimizer: torch.optim.Optimizer = optimizer
         self.epoch: int = epoch
         self.use_tensorboard: bool = use_tensorboard
+        self.params_str = ''
 
     def train(
         self,
         base_path: Union[Path, str],
         learning_rate: float = 0.1,
-        mini_batch_size: int = 32,
+        mini_batch_size: int = 512,
         mini_batch_chunk_size: int = None,
         max_epochs: int = 100,
         scheduler = AnnealOnPlateau,
@@ -91,6 +92,7 @@ class ModelTrainer:
         amp_opt_level: str = "O1",
         eval_on_train_fraction=0.0,
         eval_on_train_shuffle=False,
+        params_str: str =  '',
         **kwargs,
     ) -> dict:
         """
@@ -162,7 +164,7 @@ class ModelTrainer:
         if type(base_path) is str:
             base_path = Path(base_path)
 
-        log_handler = add_file_handler(log, base_path / "training.log")
+        log_handler = add_file_handler(log, base_path / "training.log.{}".format(params_str))
 
         log_line(log)
         log.info(f'Model: "{self.model}"')
@@ -216,7 +218,7 @@ class ModelTrainer:
                 )
 
         # prepare loss logging file and set up header
-        loss_txt = init_output_file(base_path, "loss.tsv")
+        loss_txt = init_output_file(base_path, "loss.tsv.{}".format(params_str))
 
         weight_extractor = WeightExtractor(base_path)
 
@@ -308,17 +310,17 @@ class ModelTrainer:
                 if (
                     (anneal_with_restarts or anneal_with_prestarts)
                     and learning_rate != previous_learning_rate
-                    and (base_path / "best-model.pt").exists()
+                    and (base_path / "best-model.pt.{}".format(params_str)).exists()
                 ):
                     if anneal_with_restarts:
                         log.info("resetting to best model")
                         self.model.load_state_dict(
-                            self.model.load(base_path / "best-model.pt").state_dict()
+                            self.model.load(base_path / "best-model.pt.{}".format(params_str)).state_dict()
                         )
                     if anneal_with_prestarts:
                         log.info("resetting to pre-best model")
                         self.model.load_state_dict(
-                            self.model.load(base_path / "pre-best-model.pt").state_dict()
+                            self.model.load(base_path / "pre-best-model.pt.{}".format(params_str)).state_dict()
                         )
 
                 previous_learning_rate = learning_rate
@@ -487,7 +489,7 @@ class ModelTrainer:
                         self.corpus.test,
                         mini_batch_size=mini_batch_chunk_size,
                         num_workers=num_workers,
-                        out_path=base_path / "test.tsv",
+                        out_path=base_path / "test.tsv.{}".format(params_str),
                         embedding_storage_mode=embeddings_storage_mode,
                     )
                     result_line += f"\t{test_loss}\t{test_eval_result.log_line}"
@@ -569,7 +571,7 @@ class ModelTrainer:
 
                 # if checkpoint is enabled, save model at each epoch
                 if checkpoint and not param_selection_mode:
-                    self.save_checkpoint(base_path / "checkpoint.pt")
+                    self.save_checkpoint(base_path / "checkpoint.pt.{}".format(params_str))
 
                 # if we use dev data, remember best model based on dev evaluation score
                 if (
@@ -580,17 +582,17 @@ class ModelTrainer:
                     and bad_epochs == 0
                 ):
                     print("saving best model")
-                    self.model.save(base_path / "best-model.pt")
+                    self.model.save(base_path / "best-model.pt.{}".format(params_str))
 
                     if anneal_with_prestarts:
                         current_state_dict = self.model.state_dict()
                         self.model.load_state_dict(last_epoch_model_state_dict)
-                        self.model.save(base_path / "pre-best-model.pt")
+                        self.model.save(base_path / "pre-best-model.pt.{}".format(params_str))
                         self.model.load_state_dict(current_state_dict)
 
             # if we do not use dev data for model selection, save final model
             if save_final_model and not param_selection_mode:
-                self.model.save(base_path / "final-model.pt")
+                self.model.save(base_path / "final-model.pt.{}".format(params_str))
 
         except KeyboardInterrupt:
             log_line(log)
@@ -601,12 +603,12 @@ class ModelTrainer:
 
             if not param_selection_mode:
                 log.info("Saving model ...")
-                self.model.save(base_path / "final-model.pt")
+                self.model.save(base_path / "final-model.pt.{}".format(params_str))
                 log.info("Done.")
 
         # test best model if test data is present
         if self.corpus.test:
-            final_score = self.final_test(base_path, mini_batch_chunk_size, num_workers)
+            final_score = self.final_test(base_path, mini_batch_chunk_size, num_workers, params_str = params_str)
         else:
             final_score = 0
             log.info("Test data not provided setting final score to 0")
@@ -636,7 +638,7 @@ class ModelTrainer:
         return model
 
     def final_test(
-        self, base_path: Union[Path, str], eval_mini_batch_size: int, num_workers: int = 8
+        self, base_path: Union[Path, str], eval_mini_batch_size: int, num_workers: int = 8, params_str = ''
     ):
         if type(base_path) is str:
             base_path = Path(base_path)
@@ -646,14 +648,14 @@ class ModelTrainer:
 
         self.model.eval()
 
-        if (base_path / "best-model.pt").exists():
-            self.model = self.model.load(base_path / "best-model.pt")
+        if (base_path / "best-model.pt.{}".format(params_str)).exists():
+            self.model = self.model.load(base_path / "best-model.pt.{}".format(params_str))
 
         test_results, test_loss = self.model.evaluate(
             self.corpus.test,
             mini_batch_size=eval_mini_batch_size,
             num_workers=num_workers,
-            out_path=base_path / "test.tsv",
+            out_path=base_path / "test.tsv.{}".format(params_str),
             embedding_storage_mode="none",
         )
 
