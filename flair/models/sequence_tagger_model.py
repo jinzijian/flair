@@ -753,6 +753,27 @@ class SequenceTagger(flair.nn.Model):
         CE = self.torch.nn.functional.cross_entropy(logits, targets, weight=self.loss_weights)
         return self.weight_combine * CE + (1-self.weight_cobine) * THL
 
+    def ThresHoldLossI(self, logits, targets):
+
+        N = targets.shape[0]
+        target_logits = logits[torch.arange(N), targets]
+        mask = torch.ones_like(target_logits)
+        mask[targets == self.o_idx] = 0  # cancel the target
+
+        # select the target logits
+        # targets logits should be larger than threshold by some margin
+
+        loss_target = (torch.max(self.zero, self.threshold + self.margin - target_logits) * mask).sum()
+        if mask.sum() > 0:
+            loss_target = loss_target / mask.sum()
+
+        mask = torch.ones_like(logits)
+        mask[torch.arange(N), targets] = 0  # cancel the target
+        loss_not_target = (torch.max(self.zero, logits - (self.threshold - self.margin)) * mask).sum() / mask.sum()
+        loss_test = self.weight_true * loss_target + (1 - self.weight_true) * loss_not_target
+        # print(loss_target, loss_not_target)
+        return self.weight_true * loss_target + (1 - self.weight_true) * loss_not_target
+
     def ThresHoldLoss(self, logits, targets):
         # TODO: finish the threshold loss efficiently
         N = targets.shape[0]
@@ -806,9 +827,13 @@ class SequenceTagger(flair.nn.Model):
             ):
                 sentence_feats = sentence_feats[:sentence_length]
                 if(self.loss_type == 'CTL'):
-                    score += self.Combined_loss(sentence_feats, sentence_tagsss)
+                    score += self.Combined_loss(sentence_feats, sentence_tags)
                 if(self.loss_type == 'THL'):
+                    #sentence_feats = F.softmax(sentence_feats,dim=1)
                     score += self.ThresHoldLoss(sentence_feats, sentence_tags)
+                if (self.loss_type == 'THLI'):
+                    # sentence_feats = F.softmax(sentence_feats,dim=1)
+                    score += self.ThresHoldLossI(sentence_feats, sentence_tags)
                 elif(self.loss_type == 'CE'):
                     score += torch.nn.functional.cross_entropy(
                         sentence_feats, sentence_tags, weight=self.loss_weights
@@ -841,9 +866,13 @@ class SequenceTagger(flair.nn.Model):
             for index, length in enumerate(lengths):
                 feature[index, length:] = 0
                 softmax_batch = feature
+            if(self.loss_type == 'CTL'):
+                #softmax_batch = F.softmax(feature, dim=2).cpu()
+                softmax_batch[:, :, self.o_idx] = torch.max(self.threshold.cpu(), softmax_batch[:, :, self.o_idx])
             if(self.loss_type == 'CE'):
                 softmax_batch = F.softmax(feature, dim=2).cpu()
-            elif(self.loss_type == 'THL'):
+            elif(self.loss_type == 'THL' or self.loss_type == 'THLI'):
+                #softmax_batch = F.softmax(feature, dim=2).cpu()
                 softmax_batch[:, :, self.o_idx] = torch.max(self.threshold.cpu(), softmax_batch[:, :, self.o_idx])
             scores_batch, prediction_batch = torch.max(softmax_batch, dim=2)
             feature = zip(softmax_batch, scores_batch, prediction_batch)

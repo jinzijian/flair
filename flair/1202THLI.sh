@@ -1,0 +1,10 @@
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.1 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.2 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.3 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.4 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.4 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.6 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.7 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.8 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.9 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.5 --weight_ture 0.95 --threshold 0.5 --margin 0.5 --run THLI --ep 50  --loss THLI

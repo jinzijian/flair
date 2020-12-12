@@ -1,14 +1,15 @@
 import argparse
 from flair.data import Corpus
 from flair.datasets import ColumnCorpus
-from flair.embeddings import TokenEmbeddings, WordEmbeddings, StackedEmbeddings
+from flair.embeddings import TokenEmbeddings, WordEmbeddings, StackedEmbeddings, PooledFlairEmbeddings
+from typing import List
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--loss', default='THL', type=str, help="loss type, should be in [THL, CE，CTL]")
+    parser.add_argument('--loss', default='THL', type=str, help="loss type, should be in [THL, CE，CTL, THLI]")
 
     parser.add_argument('--Oval', default='change', type=str, help="change O or not, should be in [change, not_change]")
 
@@ -24,9 +25,13 @@ if __name__ == '__main__':
 
     parser.add_argument('--run', default='test', type=str, help="saving/logging directory")
 
+    parser.add_argument('--ep', default=30, type=int, help="epoch number")
+
+    parser.add_argument('--dr', default= 10, type=float, help="decay rate")
+
     args = parser.parse_args()
 
-    assert args.loss in ['THL', 'CE', 'THL-S']
+    assert args.loss in ['THL', 'CE', 'THL-S','THLI']
     assert args.Oval in ['change', 'not_change']
 
     params_str = 'lr%fwg%fthl%fmg%f' % (args.lr,args.weight_ture,args.threshold,args.margin)
@@ -61,8 +66,11 @@ if __name__ == '__main__':
         # CharacterEmbeddings(),
 
         # comment in these lines to use flair embeddings
-        # FlairEmbeddings('news-forward'),
-        # FlairEmbeddings('news-backward'),
+        # contextual string embeddings, forward
+        PooledFlairEmbeddings('/p300/flair/news-forward-0.4.1.pt', pooling='min'),
+
+        # contextual string embeddings, backward
+        PooledFlairEmbeddings('/p300/flair/news-backward-0.4.1.pt', pooling='min'),
     ]
 
     embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
@@ -91,8 +99,10 @@ if __name__ == '__main__':
     trainer.train('resources/taggers/{}'.format(args.run),
                   learning_rate=args.lr,
                   mini_batch_size=32,
-                  max_epochs= 30,
-                  params_str = params_str)
+                  max_epochs= args.ep,
+                  train_with_dev=True,
+                  params_str = params_str,
+                  dr = args.dr)
 
 
 

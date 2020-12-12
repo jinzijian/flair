@@ -1,0 +1,13 @@
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.1 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.2 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.3 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.4 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.5 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.6 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.7 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.8 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 0.9 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 1 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 1.2 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 1.5 --margin 0.7 --run 1205 --ep 150  --loss THLI
+CUDA_VISIBLE_DEVICES=0 /root/anaconda3/envs/new_env/bin/python3.6 main.py --lr 1.7 --weight_ture 0.24 --threshold 2 --margin 0.7 --run 1205 --ep 150  --loss THLI

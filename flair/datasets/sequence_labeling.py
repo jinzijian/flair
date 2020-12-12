@@ -62,6 +62,7 @@ class ColumnCorpus(Corpus):
             in_memory=in_memory,
             document_separator_token=document_separator_token,
             skip_first_line=skip_first_line,
+            portion=1.0,
         )
 
         # read in test file if exists
@@ -108,6 +109,7 @@ class ColumnDataset(FlairDataset):
             document_separator_token: str = None,
             encoding: str = "utf-8",
             skip_first_line: bool = False,
+            portion: float = 1.0,
     ):
         """
         Instantiates a column dataset (typically used for sequence labeling or word-level prediction).
@@ -202,6 +204,10 @@ class ColumnDataset(FlairDataset):
             else:
                 self.indices.append(position)
             self.total_sentence_count += 1
+
+        # n_sample = int(len(self.sentences) * portion)
+        # self.sentences = random.choice(self.sentences, n_sample)
+        # self.total_sentence_count = n_sample
 
     def _parse_token(self, line: str) -> Token:
         fields: List[str] = re.split(self.column_delimiter, line.rstrip())
