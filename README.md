@@ -36,7 +36,7 @@ In the NLP task, most of the token tags in the sentence are “O”
 
 The targets of a character may have several values closed to each other, so we want to add some bias when the value is not large enough and try to classify the real target and "other" classes. As is done in SVM, we set a Threshold and margin so that when the target is less than the (Threshold+margin), we add bias of (Threshold + margin -target) even though the target we choose is the right one. Similarly, add bias to the not_target values more than(Threshold -margin). Additionally, if all the targets are less than (Threshold -margin), we think the character belongs to the "other" class. Thus we can diminish the imbalance caused by a large number of "other" classes and get a similar result as using RFC.
 
-![Image text](https://https://github.com/jinzijian/flair/image/code.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/code.png)
 
 ### Flair Embedding
 
@@ -44,29 +44,29 @@ The model uses the character as the atomic unit. In the network, each character 
 
 The model output embedding in word units. This embedding is composed of the hidden state of the last letter of the word in the forward LSTM and the hidden state of the first letter of the word in the reverse LSTM, so that context information can be taken into account.
 
-![Image text](https://https://github.com/jinzijian/flair/image/1.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/1.png)
 
 
 ### Flair is better than the previous best methods for NLP tasks.
 
-![Image text](https://https://github.com/jinzijian/flair/image/2.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/2.png)
 
 ### char CNN
 
 Different from what we learned in the class using CNN to processing the image, we need to use char CNN to achieve it. First, the char CNN make character table and transfer the characters to one-hot vector with a zero vector to represent the character not in the table so that a sentence will be transferred to a matrix. And then put the matrix to several convolutional layers and full-connected layers. But the difference between processing text and image in CNN is that when we processing images, we always process the region of pixels with height and width we defined by ourselves but in char CNN the weight of the kernel will always be the length of a single character.
 
-![Image text](https://https://github.com/jinzijian/flair/image/3.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/3.png)
 
 
 ### Tuning
 
 #### Before
 
-![Image text](https://https://github.com/jinzijian/flair/image/4.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/4.png)
 
 #### After
 
-![Image text](https://https://github.com/jinzijian/flair/image/5.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/5.png)
 
 ## Conclusion
 
