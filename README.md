@@ -72,6 +72,8 @@ Different from what we learned in the class using CNN to processing the image, w
 
 ![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/5.png)
 
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/loss.png)
+
 ## Conclusion
 
 
