@@ -1,216 +1,87 @@
-![alt text](resources/docs/flair_logo_2020.png)
+# A method to solve data imbalance in NLP tasks
 
-[![PyPI version](https://badge.fury.io/py/flair.svg)](https://badge.fury.io/py/flair)
-[![GitHub Issues](https://img.shields.io/github/issues/flairNLP/flair.svg)](https://github.com/flairNLP/flair/issues)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
-[![Travis](https://img.shields.io/travis/flairNLP/flair.svg)](https://travis-ci.org/flairNLP/flair)
+Zijian Jin, Liangfu Zhong, Xihong Jiang
 
-A very simple framework for **state-of-the-art NLP**. Developed by [Humboldt University of Berlin](https://www.informatik.hu-berlin.de/en/forschung-en/gebiete/ml-en/) and friends.
 
-* __IMPORTANT: (30.08.2020)__ *We moved our models to a new server. Please update your Flair to the newest version!*
+## Introduction
 
----
+- Motivation
 
-Flair is:
 
-* **A powerful NLP library.** Flair allows you to apply our state-of-the-art natural language processing (NLP)
-models to your text, such as named entity recognition (NER), part-of-speech tagging (PoS),
- sense disambiguation and classification, with support for a rapidly growing number of languages.
+### Our motivation:
 
-* **A biomedical NER library.** Flair has special support for [biomedical data](/resources/docs/HUNFLAIR.md) with
-state-of-the-art models for biomedical NER and support for over 32 biomedical datasets.
+As there are lots of characters are classified into “o”(others) in the text which may cause data imbalance when we train the model, we want to find a way to diminish the influence. As we learned in the SVM chapter, we can use the hinge loss to classify the data and maximize the distance of different classes to the SVs. Besides, we also want to maximize the distance between the "other" class and the real target of the character. So we propose a loss function named ThresholdLossI.
 
-* **A text embedding library.** Flair has simple interfaces that allow you to use and combine different word and
-document embeddings, including our proposed **[Flair embeddings](https://www.aclweb.org/anthology/C18-1139/)**, BERT embeddings and ELMo embeddings.
+After tuning, the accuracy of ThresholdLossI far exceeds that of Softmax, and it is close to CRF in a shorter time.
 
-* **A PyTorch NLP framework.** Our framework builds directly on [PyTorch](https://pytorch.org/), making it easy to
-train your own models and experiment with new approaches using Flair embeddings and classes.
 
-Now at [version 0.6.1](https://github.com/flairNLP/flair/releases)!
+### Data imbalance :
 
-## Comparison with State-of-the-Art
+In NLP tasks, we often encounter this kind of trouble: the problem of data imbalance. The sample sizes of different categories vary greatly.
 
-Flair outperforms the previous best methods on a range of NLP tasks:
+The problem of data imbalance mainly exists in supervised machine learning tasks. When encountering unbalanced data, the traditional classification algorithm that takes the overall classification accuracy as the learning goal will pay too much attention to the majority class, which will reduce the classification performance of the minority class samples. Most common machine learning algorithms do not work well with unbalanced data sets.
 
-| Task | Language | Dataset | Flair | Previous best |
-| -------------------------------  | ---  | ----------- | ---------------- | ------------- |
-| Named Entity Recognition |English | Conll-03    |  **93.18** (F1)  | *92.22 [(Peters et al., 2018)](https://arxiv.org/pdf/1802.05365.pdf)* |
-| Named Entity Recognition |English | Ontonotes   |  **89.3** (F1)  | *86.28 [(Chiu et al., 2016)](https://arxiv.org/pdf/1511.08308.pdf)* |
-| Emerging Entity Detection | English | WNUT-17      |  **49.49** (F1)  | *45.55 [(Aguilar et al., 2018)](http://aclweb.org/anthology/N18-1127.pdf)* |
-| Part-of-Speech tagging |English| WSJ  | **97.85**  | *97.64 [(Choi, 2016)](https://www.aclweb.org/anthology/N16-1031)*|
-| Chunking |English| Conll-2000  |  **96.72** (F1) | *96.36 [(Peters et al., 2017)](https://arxiv.org/pdf/1705.00108.pdf)*
-| Named Entity Recognition | German  | Conll-03    |  **88.27** (F1)  | *78.76 [(Lample et al., 2016)](https://arxiv.org/abs/1603.01360)* |
-| Named Entity Recognition |German  | Germeval    |  **84.65** (F1)  | *79.08 [(Hänig et al, 2014)](http://asv.informatik.uni-leipzig.de/publication/file/300/GermEval2014_ExB.pdf)*|
-| Named Entity Recognition | Dutch  | Conll-02    |  **92.38** (F1)  | *81.74 [(Lample et al., 2016)](https://arxiv.org/abs/1603.01360)* |
-| Named Entity Recognition |Polish  | PolEval-2018    |  **86.6** (F1) <br> [(Borchmann et al., 2018)](https://github.com/applicaai/poleval-2018) | *85.1 [(PolDeepNer)](https://github.com/CLARIN-PL/PolDeepNer/)*|
+In the NLP task, most of the token tags in the sentence are “O”
 
-Here's how to [reproduce these numbers](/resources/docs/EXPERIMENTS.md) using Flair. You can also find detailed evaluations and discussions in our papers:
 
-* *[Contextual String Embeddings for Sequence Labeling](https://www.aclweb.org/anthology/C18-1139/).
-Alan Akbik, Duncan Blythe and Roland Vollgraf.
-27th International Conference on Computational Linguistics, **COLING 2018**.*
+## Methodology
 
-* *[Pooled Contextualized Embeddings for Named Entity Recognition](https://www.aclweb.org/anthology/papers/N/N19/N19-1078/).
-Alan Akbik, Tanja Bergmann and Roland Vollgraf.
-2019 Annual Conference of the North American Chapter of the Association for Computational Linguistics, **NAACL 2019**.*
+- ThresholdLossI
+- Flair Embedding
+- char CNN
+- Tuning
 
-* *[FLAIR: An Easy-to-Use Framework for State-of-the-Art NLP](https://www.aclweb.org/anthology/papers/N/N19/N19-4010/).
-Alan Akbik, Tanja Bergmann, Duncan Blythe, Kashif Rasul, Stefan Schweter and Roland Vollgraf.
-2019 Annual Conference of the North American Chapter of the Association for Computational Linguistics (Demonstrations), **NAACL 2019**.*
 
-## Quick Start
+### ThresholdLossI：
 
-### Requirements and Installation
+The targets of a character may have several values closed to each other, so we want to add some bias when the value is not large enough and try to classify the real target and "other" classes. As is done in SVM, we set a Threshold and margin so that when the target is less than the (Threshold+margin), we add bias of (Threshold + margin -target) even though the target we choose is the right one. Similarly, add bias to the not_target values more than(Threshold -margin). Additionally, if all the targets are less than (Threshold -margin), we think the character belongs to the "other" class. Thus we can diminish the imbalance caused by a large number of "other" classes and get a similar result as using RFC.
 
-The project is based on PyTorch 1.1+ and Python 3.6+, because method signatures and type hints are beautiful.
-If you do not have Python 3.6, install it first. [Here is how for Ubuntu 16.04](https://vsupalov.com/developing-with-python3-6-on-ubuntu-16-04/).
-Then, in your favorite virtual environment, simply do:
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/code.png)
 
-```
-pip install flair
-```
+### Flair Embedding
 
-### Example Usage
+The model uses the character as the atomic unit. In the network, each character has a corresponding hidden state.
 
-Let's run named entity recognition (NER) over an example sentence. All you need to do is make a `Sentence`, load
-a pre-trained model and use it to predict tags for the sentence:
+The model output embedding in word units. This embedding is composed of the hidden state of the last letter of the word in the forward LSTM and the hidden state of the first letter of the word in the reverse LSTM, so that context information can be taken into account.
 
-```python
-from flair.data import Sentence
-from flair.models import SequenceTagger
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/1.png)
 
-# make a sentence
-sentence = Sentence('I love Berlin .')
 
-# load the NER tagger
-tagger = SequenceTagger.load('ner')
+### Flair is better than the previous best methods for NLP tasks.
 
-# run NER over sentence
-tagger.predict(sentence)
-```
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/2.png)
 
-Done! The `Sentence` now has entity annotations. Print the sentence to see what the tagger found.
+### char CNN
 
-```python
-print(sentence)
-print('The following NER tags are found:')
+Different from what we learned in the class using CNN to processing the image, we need to use char CNN to achieve it. First, the char CNN make character table and transfer the characters to one-hot vector with a zero vector to represent the character not in the table so that a sentence will be transferred to a matrix. And then put the matrix to several convolutional layers and full-connected layers. But the difference between processing text and image in CNN is that when we processing images, we always process the region of pixels with height and width we defined by ourselves but in char CNN the weight of the kernel will always be the length of a single character.
 
-# iterate over entities and print
-for entity in sentence.get_spans('ner'):
-    print(entity)
-```
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/3.png)
 
-This should print:
 
-```console
-Sentence: "I love Berlin ." - 4 Tokens
+### Tuning
 
-The following NER tags are found:
+#### Before
 
-Span [3]: "Berlin"   [− Labels: LOC (0.9992)]
-```
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/4.png)
 
-## Tutorials
+#### After
 
-We provide a set of quick tutorials to get you started with the library:
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/5.png)
 
-* [Tutorial 1: Basics](/resources/docs/TUTORIAL_1_BASICS.md)
-* [Tutorial 2: Tagging your Text](/resources/docs/TUTORIAL_2_TAGGING.md)
-* [Tutorial 3: Embedding Words](/resources/docs/TUTORIAL_3_WORD_EMBEDDING.md)
-* [Tutorial 4: List of All Word Embeddings](/resources/docs/TUTORIAL_4_ELMO_BERT_FLAIR_EMBEDDING.md)
-* [Tutorial 5: Embedding Documents](/resources/docs/TUTORIAL_5_DOCUMENT_EMBEDDINGS.md)
-* [Tutorial 6: Loading a Dataset](/resources/docs/TUTORIAL_6_CORPUS.md)
-* [Tutorial 7: Training a Model](/resources/docs/TUTORIAL_7_TRAINING_A_MODEL.md)
-* [Tutorial 8: Training your own Flair Embeddings](/resources/docs/TUTORIAL_9_TRAINING_LM_EMBEDDINGS.md)
-* [Tutorial 9: Training a Zero Shot Text Classifier (TARS)](/resources/docs/TUTORIAL_10_TRAINING_ZERO_SHOT_MODEL.md)
+## Conclusion
 
-The tutorials explain how the base NLP classes work, how you can load pre-trained models to tag your
-text, how you can embed your text with different word or document embeddings, and how you can train your own
-language models, sequence labeling models, and text classification models. Let us know if anything is unclear.
 
-There is also a dedicated landing page for our **[biomedical NER and datasets](/resources/docs/HUNFLAIR.md)** with
-installation instructions and tutorials.
+### Accuracy：
 
-There are also good third-party articles and posts that illustrate how to use Flair:
-* [How to build a text classifier with Flair](https://towardsdatascience.com/text-classification-with-state-of-the-art-nlp-library-flair-b541d7add21f)
-* [How to build a microservice with Flair and Flask](https://shekhargulati.com/2019/01/04/building-a-sentiment-analysis-python-microservice-with-flair-and-flask/)
-* [A docker image for Flair](https://towardsdatascience.com/docker-image-for-nlp-5402c9a9069e)
-* [Great overview of Flair functionality and how to use in Colab](https://www.analyticsvidhya.com/blog/2019/02/flair-nlp-library-python/)
-* [Visualisation tool for highlighting the extracted entities](https://github.com/lunayach/visNER)
-* [Practical approach of State-of-the-Art Flair in Named Entity Recognition](https://medium.com/analytics-vidhya/practical-approach-of-state-of-the-art-flair-in-named-entity-recognition-46a837e25e6b)
-* [Benchmarking NER algorithms](https://towardsdatascience.com/benchmark-ner-algorithm-d4ab01b2d4c3)
-* [Training a Flair text classifier on Google Cloud Platform (GCP) and serving predictions on GCP](https://github.com/robinvanschaik/flair-on-gcp)
+After training with processed CoNLL-2003 English dataset:
 
-## Citing Flair
+BiLSTM+Softmax: 0.9017
+BiLSTM+CRF: 0.9307
+BiLSTM+ThresholdLossI: 0.9252
 
-Please cite the following paper when using Flair:
+The accuracy of ThresholdLossI far exceeds that of Softmax, and it is close to CRF in a shorter time.
 
-```
-@inproceedings{akbik2018coling,
-  title={Contextual String Embeddings for Sequence Labeling},
-  author={Akbik, Alan and Blythe, Duncan and Vollgraf, Roland},
-  booktitle = {{COLING} 2018, 27th International Conference on Computational Linguistics},
-  pages     = {1638--1649},
-  year      = {2018}
-}
-```
 
-If you use the pooled version of the Flair embeddings (PooledFlairEmbeddings), please cite:
+It is expected that in the future, we will be able to make further improvements to our proposed method, our method can be used in more NLP tasks and will play a role in promoting NLP research.
 
-```
-@inproceedings{akbik2019naacl,
-  title={Pooled Contextualized Embeddings for Named Entity Recognition},
-  author={Akbik, Alan and Bergmann, Tanja and Vollgraf, Roland},
-  booktitle = {{NAACL} 2019, 2019 Annual Conference of the North American Chapter of the Association for Computational Linguistics},
-  pages     = {724–728},
-  year      = {2019}
-}
-```
 
-## Contact
-
-Please email your questions or comments to [Alan Akbik](http://alanakbik.github.io/).
-
-## Contributing
-
-Thanks for your interest in contributing! There are many ways to get involved;
-start with our [contributor guidelines](CONTRIBUTING.md) and then
-check these [open issues](https://github.com/flairNLP/flair/issues) for specific tasks.
-
-For contributors looking to get deeper into the API we suggest cloning the repository and checking out the unit
-tests for examples of how to call methods. Nearly all classes and methods are documented, so finding your way around
-the code should hopefully be easy.
-
-### Running unit tests locally
-
-You need [Pipenv](https://pipenv.readthedocs.io/) for this:
-
-```bash
-pipenv install --dev && pipenv shell
-pytest tests/
-```
-
-To run integration tests execute:
-```bash
-pytest --runintegration tests/
-```
-The integration tests will train small models.
-Afterwards, the trained model will be loaded for prediction.
-
-To also run slow tests, such as loading and using the embeddings provided by flair, you should execute:
-```bash
-pytest --runslow tests/
-```
-
-## [License](/LICENSE)
-
-The MIT License (MIT)
-
-Flair is licensed under the following MIT license: The MIT License (MIT) Copyright © 2018 Zalando SE, https://tech.zalando.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
