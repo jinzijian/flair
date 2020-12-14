@@ -79,9 +79,14 @@ BiLSTM+Softmax: 0.9017
 BiLSTM+CRF: 0.9307
 BiLSTM+ThresholdLossI: 0.9252
 
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/6.png)
+
 The accuracy of ThresholdLossI far exceeds that of Softmax, and it is close to CRF in a shorter time.
 
 
-It is expected that in the future, we will be able to make further improvements to our proposed method, our method can be used in more NLP tasks and will play a role in promoting NLP research.
+### Expectation
+It is expected that in the future, we will be able to make further improvements to our proposed method
+In the future we plan to combine our existing methods and CRF to achieve higher accuracy and higher speed
+We hope our method can be used in more NLP tasks and will play a role in promoting NLP research.
 
 
