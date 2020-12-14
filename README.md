@@ -42,11 +42,13 @@ The targets of a character may have several values closed to each other, so we w
 
 The model uses the character as the atomic unit. In the network, each character has a corresponding hidden state.
 
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/1.png)
+
 ### BiLSTM
 
 The model output embedding in word units. This embedding is composed of the hidden state of the last letter of the word in the forward LSTM and the hidden state of the first letter of the word in the reverse LSTM, so that context information can be taken into account.
 
-![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/1.png)
+![Image text](https://raw.githubusercontent.com/hsihung2043/flair/master/image/bl.png)
 
 
 ### Flair is better than the previous best methods for NLP tasks.
