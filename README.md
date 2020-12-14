@@ -15,7 +15,11 @@ As there are lots of characters are classified into “o”(others) in the text 
 After tuning, the accuracy of ThresholdLossI far exceeds that of Softmax, and it is close to CRF in a shorter time.
 
 
-### Data imbalance :
+### Named-entity recognition
+Named-entity recognition (NER) (also known as entity identification, entity chunking and entity extraction) is a subtask of information extraction that seeks to locate and classify named entity mentions in unstructured text into pre-defined categories such as the person names, organizations, locations, medical codes, time expressions, quantities, monetary values, percentages, etc.
+
+
+### Data imbalance
 
 In NLP tasks, we often encounter this kind of trouble: the problem of data imbalance. The sample sizes of different categories vary greatly.
 
@@ -32,7 +36,7 @@ In the NLP task, most of the token tags in the sentence are “O”
 - Tuning
 
 
-### ThresholdLossI：
+### ThresholdLossI
 
 The targets of a character may have several values closed to each other, so we want to add some bias when the value is not large enough and try to classify the real target and "other" classes. As is done in SVM, we set a Threshold and margin so that when the target is less than the (Threshold+margin), we add bias of (Threshold + margin -target) even though the target we choose is the right one. Similarly, add bias to the not_target values more than(Threshold -margin). Additionally, if all the targets are less than (Threshold -margin), we think the character belongs to the "other" class. Thus we can diminish the imbalance caused by a large number of "other" classes and get a similar result as using RFC.
 
@@ -77,7 +81,7 @@ Different from what we learned in the class using CNN to processing the image, w
 ## Conclusion
 
 
-### Accuracy：
+### Accuracy
 
 After training with processed CoNLL-2003 English dataset:
 
