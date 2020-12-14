@@ -10,6 +10,8 @@ Zijian Jin, Liangfu Zhong, Xihong Jiang
 
 ### Our motivation:
 
+We decided to do a natural language processing project, and we took named entity recognition as our research direction.
+
 As there are lots of characters are classified into “o”(others) in the text which may cause data imbalance when we train the model, we want to find a way to diminish the influence. As we learned in the SVM chapter, we can use the hinge loss to classify the data and maximize the distance of different classes to the SVs. Besides, we also want to maximize the distance between the "other" class and the real target of the character. So we propose a loss function named ThresholdLossI.
 
 After tuning, the accuracy of ThresholdLossI far exceeds that of Softmax, and it is close to CRF in a shorter time.
